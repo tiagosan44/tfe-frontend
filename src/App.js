@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { registerDrone, getAllDrones, getAllParcels } from './hooks/Core';
 
 function App() {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signerAddress = provider.getSigner().getAddress();
+
+  const [drones, setDrones] = useState([]);
+  const [refresh, setRefresh] = useState(true);
+
+  useEffect(() => {
+    if (!refresh) return;
+    setRefresh(false);
+    const connectWallet = async () => {
+      await provider.send("eth_requestAccounts", []);
+    }
+
+    const getBalance = async() => {
+      const balance = await provider.getBalance(signerAddress)
+      const balanceFormated = ethers.utils.formatEther(balance)
+      console.log(balanceFormated);
+    }
+
+    connectWallet().catch(console.error);
+    getBalance().catch(console.error);
+  });
+  
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>Hello world</>
   );
 }
 
